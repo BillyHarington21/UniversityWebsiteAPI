@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.Infrastructure.DbContext;
+using UserService.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
