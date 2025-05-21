@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UserService.Core.Entities;
 
-namespace UserService.Infrastructure.DbContext
+namespace UserService.Infrastructure.Context
 {
     public class AppDbContext : DbContext
     {
