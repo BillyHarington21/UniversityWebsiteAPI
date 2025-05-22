@@ -9,6 +9,7 @@ namespace UserService.Application.UserServices
 {
     public interface IUserService
     {
-        Task RegisterAsync(RegisterUserDto dto);
+        Task RegisterAsync(RegisterUserDto RegisterDto);
+        Task<AuthResultDto> AuthenticateAsync(LoginDto loginDto);
     }
 }
