@@ -11,6 +11,7 @@ namespace UserService.Infrastructure
     {
         Task<IEnumerable<User>> GetAllAsync();
         Task<User?> GetByIdAsync(int id);
+        Task<User?> GetByUsernameAsync(string Name);
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task DeleteAsync(int id);

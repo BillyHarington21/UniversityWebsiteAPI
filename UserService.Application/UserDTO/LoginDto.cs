@@ -8,7 +8,7 @@ namespace UserService.Application.UserDTO
 {
     public class LoginDto
     {
-        public int id { get; set }
+        public int id { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }

@@ -10,6 +10,6 @@ namespace UserService.Application.UserServices
     public interface IUserService
     {
         Task RegisterAsync(RegisterUserDto RegisterDto);
-        Task<AuthResultDto> AuthenticateAsync(LoginDto loginDto);
+        
     }
 }

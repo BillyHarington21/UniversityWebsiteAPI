@@ -49,50 +49,8 @@ namespace UserService.Application.RealisationUserService
             hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
 
-        public async Task<AuthResultDto> AuthenticateAsync(LoginDto loginDto)
-        {
-            var user = await _repository.GetByIdAsync(loginDto.id);
+        
 
-            if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash, user.PasswordSalt))
-                throw new UnauthorizedAccessException("Invalid credentials.");
-
-            var token = GenerateJwtToken(user);
-
-            return new AuthResultDto
-            {
-                Token = token,
-                Role = user.Role.ToString()
-            };
-        }
-
-        private bool VerifyPassword(string password, byte[] hash, byte[] salt)
-        {
-            using var hmac = new System.Security.Cryptography.HMACSHA512(salt);
-            var computed = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            return computed.SequenceEqual(hash);
-        }
-
-        private string GenerateJwtToken(User user)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration["Jwt:Key"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UserService.Infrastructure.Context;
+using UserService.Infrastructure.Identity;
+using UserService.Infrastructure.Identity.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,21 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-                        options =>
-                        {
-                            options.TokenValidationParameters = new TokenValidationParameters
-                            {
-                                ValidateIssuer = true,
-                                ValidateAudience = true,
-                                ValidateLifetime = true,
-                                ValidateIssuerSigningKey = true,
-                                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                                ValidAudience = builder.Configuration["Jwt:Audience"],
-                                IssuerSigningKey = new SymmetricSecurityKey(
-                                    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-                            };
-                        });
+builder.Services.AddIdentityServer()
+    .AddInMemoryClients(Config.Clients)
+    .AddInMemoryApiScopes(Config.ApiScopes)
+    .AddInMemoryApiResources(Config.ApiResources)
+    .AddInMemoryIdentityResources(Config.IdentityResources)
+    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+    .AddProfileService<CustomProfileService>();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
