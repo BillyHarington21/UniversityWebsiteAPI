@@ -2,29 +2,36 @@
 
 # Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-# Этот этап используется для сборки проекта службы
+# Этап сборки
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["UniversityWebsiteAPI/UniversityWebsiteAPI.csproj", "UniversityWebsiteAPI/"]
-RUN dotnet restore "./UniversityWebsiteAPI/UniversityWebsiteAPI.csproj"
-COPY . .
-WORKDIR "/src/UniversityWebsiteAPI"
-RUN dotnet build "./UniversityWebsiteAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
+COPY UserService.Api/UserService.Api.csproj ./UserService.Api/
+COPY UserService.Application/UserService.Application.csproj ./UserService.Application/
+COPY UserService.Infrastructure/UserService.Infrastructure.csproj ./UserService.Infrastructure/
+COPY UserService.Core/UserService.Core.csproj ./UserService.Core/
+
+RUN dotnet restore ./UserService.Api/UserService.Api.csproj
+
+COPY . .
+
+WORKDIR /src/UserService.Api
+RUN dotnet build "UserService.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Публикация
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./UniversityWebsiteAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "UserService.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
+# Финальный образ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "UniversityWebsiteAPI.dll"]
+ENTRYPOINT ["dotnet", "UserService.Api.dll"]
+
+

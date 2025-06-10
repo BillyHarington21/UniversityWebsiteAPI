@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using UserService.Application.UserDTO;
@@ -13,10 +17,12 @@ namespace UserService.Application.RealisationUserService
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository repository, IConfiguration configuration)
         {
             _repository = repository;
+            _configuration = configuration;
         }
 
         public async Task RegisterAsync(RegisterUserDto dto)
@@ -42,5 +48,9 @@ namespace UserService.Application.RealisationUserService
             salt = hmac.Key;
             hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
+
+        
+
+        
     }
 }

@@ -27,6 +27,11 @@ namespace UserService.Infrastructure.RealizationRepositories
             return await _context.Users.FindAsync(id);
         }
 
+        public async Task<User?> GetByUsernameAsync(string Name)
+        {
+            return await _context.Users.FindAsync(Name);
+        }
+
         public async Task AddAsync(User user)
         {
             _context.Users.Add(user);
